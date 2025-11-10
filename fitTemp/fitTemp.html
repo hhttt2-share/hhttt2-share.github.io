@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기온 별 옷차림</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="icon.ico">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .widget-container {
+            width: 300px;
+            height: 300px;
+        }
+        .temp-bar {
+            background: linear-gradient(to bottom, 
+                #F5684C 0%, 
+                #FF830F 23.56%, 
+                #E9D159 55.29%, 
+                #96D77A 66%, 
+                #4CA3A4 78.37%, 
+                #0371CE 100%);
+            width: 9.12px;
+            height: 151.43px;
+            border-radius: 4.56px 4.56px 0 0;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;  /* Chrome, Safari, Opera */
+        }
+    </style>
+</head>
+<body class="bg-transparent flex items-center justify-center h-screen p-4">
+    <div class="flex flex-col items-center">
+        <div 
+        class="widget-container rounded-[26.81px] shadow-2xl 
+        overflow-hidden flex flex-col justify-between dark:bg-slate-500" 
+        style="box-shadow: 0 0 8px -1px rgba(0, 0, 0, 0.2), 0 0 5px -1px rgba(0, 0, 0, 0.1); padding: 18.23px 16.62px;">
+            <!-- Header -->
+            <!-- <div class="text-center pt-6 pb-4">
+                <p class="text-sm text-gray-600 mb-1 font-medium">한 장으로 마스터하자!</p>
+                <h1 class="text-xl font-bold text-gray-800">기온 별 옷차림</h1>
+            </div> -->
+
+            <!-- Weather Info -->
+            <div class="flex flex-col items-center justify-center" style="width: 266.76px; height: 87.9px; gap: 5.9px; padding: 0;">
+                <div class="flex items-center justify-center gap-1">
+                    <span id="location" class="font-medium dark:text-white text-neutral-600" style="font-size: 23.22px; line-height: 30.2px;">대구</span>
+                    <i id="weatherIcon" class="fas fa-sun text-orange-500 dark:text-orange-400" style="font-size: 23.22px;"></i>
+                    <span id="weatherStatus" class="font-medium dark:text-white text-neutral-600" style="font-size: 23.22px; line-height: 30.2px;">맑음</span>
+                </div>
+                <div class="text-center">
+                    <span id="temperature" class="font-medium text-neutral-600 dark:text-white" style="font-size: 56.94px; line-height: 50.6px;">13.3°</span>
+                </div>
+            </div>
+
+            <!-- Main Content (Frame 7) -->
+            <div class="flex flex-col" style="width: 266.76px; height: 158px; gap: 7.51px; padding: 0;">
+                <!-- Horizontal container for thermometer and clothing -->
+                <div class="flex items-start relative" style="flex: 1;">
+                    <!-- Left: Temperature Gradient Bar (Frame 16) -->
+                    <div class="flex flex-col relative" style="width: 68.16px; height: 158px; gap: 0.54px; padding: 0;">
+                        <!-- Temperature bar container with labels -->
+                        <div class="relative" style="flex: 1;">
+                            <!-- Temperature bar (thermometer) -->
+                            <div class="absolute" style="left: 0; top: 0; width: 9.12px; height: 151.43px;">
+                                <div class="temp-bar relative w-full h-full"></div>
+                            </div>
+                            
+                            <!-- Bottom circle (thermometer bulb) - overlaps with bar bottom, in front -->
+                            <div class="absolute" style="left: -2.38px; top: 141.14px; width: 14.27px; height: 14.29px; border-radius: 50%; background-color: #157EC4; z-index: 10;"></div>
+                            
+                            <!-- Temperature labels on the right of bar - space between -->
+                            <div id="tempLabels" class="absolute flex flex-col justify-between font-normal" style="left: 21.99px; top: 0; width: 53.35px; height: 151.43px; font-size: 11.45px; line-height: 19.7px; letter-spacing: -0.04em;">
+                                <div data-temp-index="0">28℃ 이상</div>
+                                <div data-temp-index="1">27~23℃</div>
+                                <div data-temp-index="2">22~20℃</div>
+                                <div data-temp-index="3">19~17℃</div>
+                                
+                                <div data-temp-index="4">16~12℃</div>
+                                <div data-temp-index="5">11~9℃</div>
+                                <div data-temp-index="6">8~5℃</div>
+                                <div data-temp-index="7">4℃ 이하</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Clothing Recommendations (Frame 9) -->
+                    <div id="clothingContainer" class="flex flex-col overflow-y-auto hide-scrollbar" style="width: 191.09px; height: 158px; gap: 7.51px; padding: 0; margin-left: 7.51px;">
+                    <!-- Row 1: 28℃ 이상 -->
+                    <div data-temp-range="0" class="clothing-row flex flex-col items-center gap-1 pt-[3px] pb-[0.51px] px-2 rounded-[10.72px] 
+                    flex-shrink-0 overflow-hidden dark:text-slate-600 text-slate-600/80 mix-blend-multiply dark:mix-blend-normal" style="width: 191.09px; height: 75.25px; box-sizing: border-box; background-color: rgba(255, 237, 233, 0.5);">
+                        <div class="font-normal text-center mix-blend-multiply dark:mix-blend-normal" style="font-size: 12.33px; line-height: 15.78px; letter-spacing: -0.02em; margin-top: 5.96px;">
+                            <div>민소매, 반팔, 반바지</div>
+                            <div>짧은 치마, 린넨 옷</div>
+                        </div>
+                        <div class="flex flex-shrink-0 mt-auto justify-between" style="width: 128.14px; height: 51.47px;">
+                            <img src="옷/1 28도 (1).png" alt="옷1" class="h-[37px] w-auto object-contain">
+                            <img src="옷/1 28도 (2).png" alt="옷2" class="h-[37px] w-auto object-contain">
+                            <img src="옷/1 28도 (3).png" alt="옷3" class="h-[37px] w-auto object-contain">
+                        </div>
+                    </div>
+
+                    <!-- Row 2: 27~23℃ -->
+                    <div data-temp-range="1" class="clothing-row flex flex-col items-center gap-1 pt-[3px] pb-[0.51px] px-2 rounded-[10.72px] 
+                    flex-shrink-0 overflow-hidden dark:text-slate-600 text-slate-600/80 mix-blend-multiply dark:mix-blend-normal" style="width: 191.09px; height: 75.25px; box-sizing: border-box; background-color: rgba(255, 236, 222, 0.5);">
+                        <div class="font-normal text-center mix-blend-multiply dark:mix-blend-normal" style="font-size: 12.33px; line-height: 15.78px; letter-spacing: -0.02em; margin-top: 5.96px;">
+                            <div>반팔, 얇은 셔츠</div>
+                            <div>반바지, 면바지</div>
+                        </div>
+                        <div class="flex flex-shrink-0 mt-auto justify-between" style="width: 128.14px; height: 51.47px;">
+                            <img src="옷/2 27도 (1).png" alt="옷1" class="h-[37px] w-auto object-contain">
+                            <img src="옷/2 27도 (2).png" alt="옷2" class="h-[37px] w-auto object-contain">
+                            <img src="옷/2 27도 (3).png" alt="옷3" class="h-[37px] w-auto object-contain">
+                        </div>
+                    </div>
+
+                    <!-- Row 3: 22~20℃ -->
+                    <div data-temp-range="2" class="clothing-row flex flex-col items-center gap-1 pt-[3px] pb-[0.51px] px-2 rounded-[10.72px] 
+                    flex-shrink-0 overflow-hidden dark:text-slate-600 text-slate-600/80 mix-blend-multiply dark:mix-blend-normal" style="width: 191.09px; height: 75.25px; box-sizing: border-box; background-color: rgba(255, 237, 213, 0.5);">
+                        <div class="font-normal text-center mix-blend-multiply dark:mix-blend-normal" style="font-size: 12.33px; line-height: 15.78px; letter-spacing: -0.02em; margin-top: 5.96px;">
+                            <div>블라우스, 긴팔 티,</div>
+                            <div>면바지, 슬랙스</div>
+                        </div>
+                        <div class="flex flex-shrink-0 mt-auto justify-between" style="width: 128.14px; height: 51.47px;">
+                            <img src="옷/3 22도 (1).png" alt="옷1" class="h-[37px] w-auto object-contain">
+                            <img src="옷/3 22도 (2).png" alt="옷2" class="h-[37px] w-auto object-contain">
+                            <img src="옷/3 22도 (3).png" alt="옷3" class="h-[37px] w-auto object-contain">
+                        </div>
+                    </div>
+
+                    <!-- Row 4: 19~17℃ -->
+                    <div data-temp-range="3" class="clothing-row flex flex-col items-center gap-1 pt-[3px] pb-[0.51px] px-2 rounded-[10.72px] 
+                    flex-shrink-0 overflow-hidden dark:text-slate-600 text-slate-600/80 mix-blend-multiply dark:mix-blend-normal" style="width: 191.09px; height: 75.25px; box-sizing: border-box; background-color: rgba(253, 246, 217, 0.5);">
+                        <div class="font-normal text-center mix-blend-multiply dark:mix-blend-normal" style="font-size: 12.33px; line-height: 15.78px; letter-spacing: -0.02em; margin-top: 5.96px;">
+                            <div>얇은 가디건이나 니트</div>
+                            <div>맨투맨, 후드, 긴 바지</div>
+                        </div>
+                        <div class="flex flex-shrink-0 mt-auto justify-between" style="width: 128.14px; height: 51.47px;">
+                            <img src="옷/4 19도 (1).png" alt="옷1" class="h-[34px] w-auto object-contain">
+                            <img src="옷/4 19도 (2).png" alt="옷2" class="h-[34px] w-auto object-contain">
+                            <img src="옷/4 19도 (3).png" alt="옷3" class="h-[34px] w-auto object-contain">
+                        </div>
+                    </div>
+
+                    <!-- Row 5: 16~12℃ -->
+                    <div data-temp-range="4" class="clothing-row flex flex-col items-center gap-1 pt-[3px] pb-[0.51px] px-2 rounded-[10.72px] 
+                    flex-shrink-0 overflow-hidden dark:text-slate-600 text-slate-600/80 mix-blend-multiply dark:mix-blend-normal" style="width: 191.09px; height: 75.25px; box-sizing: border-box; background-color: rgba(236, 239, 212, 0.5);">
+                        <div class="font-normal text-center mix-blend-multiply dark:mix-blend-normal" style="font-size: 12.33px; line-height: 15.78px; letter-spacing: -0.02em; margin-top: 5.96px;">
+                            <div>자켓, 가디건, 청자켓</div>
+                            <div>니트, 스타킹, 청바지</div>
+                        </div>
+                        <div class="flex flex-shrink-0 mt-auto justify-between" style="width: 128.14px; height: 51.47px;">
+                            <img src="옷/5 16도 (1).png" alt="옷1" class="h-[37px] w-auto object-contain">
+                            <img src="옷/5 16도 (2).png" alt="옷2" class="h-[37px] w-auto object-contain">
+                            <img src="옷/5 16도 (3).png" alt="옷3" class="h-[37px] w-auto object-contain">
+                        </div>
+                    </div>
+
+                    <!-- Row 6: 11~9℃ -->
+                    <div data-temp-range="5" class="clothing-row flex flex-col items-center gap-1 pt-[3px] pb-[0.51px] px-2 rounded-[10.72px] 
+                    flex-shrink-0 overflow-hidden dark:text-slate-600 text-slate-600/80 mix-blend-multiply dark:mix-blend-normal" style="width: 191.09px; height: 75.25px; box-sizing: border-box; background-color: rgba(218, 232, 232, 0.5);">
+                        <div class="font-normal text-center mix-blend-multiply dark:mix-blend-normal" style="font-size: 12.33px; line-height: 15.78px; letter-spacing: -0.02em; margin-top: 5.96px;">
+                            <div>트렌치 코트, 야상,</div>
+                            <div>점퍼, 스타킹, 기모바지</div>
+                        </div>
+                        <div class="flex flex-shrink-0 mt-auto justify-between" style="width: 128.14px; height: 51.47px;">
+                            <img src="옷/6 11도 (1).png" alt="옷1" class="h-[37px] w-auto object-contain">
+                            <img src="옷/6 11도 (2).png" alt="옷2" class="h-[37px] w-auto object-contain">
+                            <img src="옷/6 11도 (3).png" alt="옷3" class="h-[37px] w-auto object-contain">
+                        </div>
+                    </div>
+
+                    <!-- Row 7: 8~5℃ -->
+                    <div data-temp-range="6" class="clothing-row flex flex-col items-center gap-1 pt-[3px] pb-[0.51px] px-2 rounded-[10.72px] 
+                    flex-shrink-0 overflow-hidden dark:text-slate-600 text-slate-600/80 mix-blend-multiply dark:mix-blend-normal" style="width: 191.09px; height: 75.25px; box-sizing: border-box; background-color: rgba(208, 233, 240, 0.5);">
+                        <div class="font-normal text-center mix-blend-multiply dark:mix-blend-normal" style="font-size: 12.33px; line-height: 15.78px; letter-spacing: -0.02em; margin-top: 5.96px;">
+                            <div>울 코트, 히트텍,</div>
+                            <div>가죽 옷, 기모</div>
+                        </div>
+                        <div class="flex flex-shrink-0 mt-auto justify-between" style="width: 128.14px; height: 51.47px;">
+                            <img src="옷/7 8도 (1).png" alt="옷1" class="h-[37px] w-auto object-contain">
+                            <img src="옷/7 8도 (2).png" alt="옷2" class="h-[37px] w-auto object-contain">
+                            <img src="옷/7 8도 (3).png" alt="옷3" class="h-[37px] w-auto object-contain">
+                        </div>
+                    </div>
+
+                    <!-- Row 8: 4℃ 이하 -->
+                    <div data-temp-range="7" class="clothing-row flex flex-col items-center gap-1 pt-[3px] pb-[0.51px] px-2 rounded-[10.72px] 
+                    flex-shrink-0 overflow-hidden dark:text-slate-600 text-slate-600/80 mix-blend-multiply dark:mix-blend-normal" style="width: 191.09px; height: 75.25px; box-sizing: border-box; background-color: rgba(224, 230, 242, 0.5);">
+                        <div class="font-normal text-center mix-blend-multiply dark:mix-blend-normal" style="font-size: 12.33px; line-height: 15.78px; letter-spacing: -0.02em; margin-top: 5.96px;">
+                            <div>패딩, 두꺼운 코트,</div>
+                            <div>누빔 옷, 기모, 목도리</div>
+                        </div>
+                        <div class="flex flex-shrink-0 mt-auto justify-between" style="width: 128.14px; height: 51.47px;">
+                            <img src="옷/8 4도 (1).png" alt="옷1" class="h-[37px] w-auto object-contain">
+                            <img src="옷/8 4도 (2).png" alt="옷2" class="h-[37px] w-auto object-contain">
+                            <img src="옷/8 4도 (3).png" alt="옷3" class="h-[37px] w-auto object-contain">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-1" style="width: 300px;">
+        <a href="https://youtube.com/@hhttt2" target="_blank" 
+        class="text-[13px] text-gray-400 hover:text-gray-500 dark:text-gray-100/50 dark:hover:text-gray-200">youtube.com/@hhttt2</a>
+    </div>
+
+    <script>
+        // 온도 범위 정의 (index: [min, max])
+        // 주의: 범위는 min <= temp <= max 형태로 정의
+        const tempRanges = [
+            [28, Infinity],  // 0: 28℃ 이상
+            [23, 27],        // 1: 27~23℃
+            [20, 22],        // 2: 22~20℃
+            [17, 19],        // 3: 19~17℃
+            [12, 16],        // 4: 16~12℃
+            [9, 11.999],     // 5: 11~9℃ (9도 이상 11.999도 이하)
+            [5, 8.999],      // 6: 8~5℃ (5도 이상 8.999도 미만, 9도 미만)
+            [-Infinity, 4.999]   // 7: 4℃ 이하
+        ];
+
+        // 현재 온도에 해당하는 범위 찾기
+        function getTempRangeIndex(temp) {
+            // 온도를 숫자로 변환 (문자열일 경우 대비)
+            const numTemp = parseFloat(temp);
+            if (isNaN(numTemp)) {
+                return 8; // 기본값
+            }
+            
+            // 범위를 순회하면서 매칭되는 첫 번째 범위 반환
+            // 높은 온도부터 낮은 온도 순서로 체크하므로 겹치는 범위가 있어도 우선순위가 높은 범위가 먼저 매칭됨
+            for (let i = 0; i < tempRanges.length; i++) {
+                const [min, max] = tempRanges[i];
+                // Infinity 체크
+                const minCheck = min === -Infinity ? true : numTemp >= min;
+                // 인덱스 6 (8~5℃)는 9도 미만이어야 하므로 < 9로 체크
+                const maxCheck = max === Infinity ? true : (i === 6 ? numTemp < 9 : numTemp <= max);
+                
+                if (minCheck && maxCheck) {
+                    return i;
+                }
+            }
+            // 기본값 (가장 가까운 범위)
+            if (numTemp > 28) return 0;
+            if (numTemp < 4) return 7;
+            return 8; // 기본값
+        }
+
+        // 계절 판단 (월 기준)
+        function isColdSeason(month) {
+            // 가을(10~12월), 겨울(1~2월)
+            return month >= 10 || month <= 2;
+        }
+
+        // 온도 라벨 색상 업데이트
+        function updateTempLabelColors(temp, month) {
+            const currentIndex = getTempRangeIndex(temp);
+            const isCold = isColdSeason(month);
+            const labels = document.querySelectorAll('#tempLabels > div');
+            
+            labels.forEach((label) => {
+                const labelIndex = parseInt(label.getAttribute('data-temp-index'));
+                
+                // 기존 인라인 스타일 제거
+                label.style.color = '';
+                
+                if (isCold) {
+                    // 가을/겨울: 현재 온도 + 바로 아래 하나(더 낮은 온도)만 검정
+                    if (labelIndex === currentIndex || labelIndex === currentIndex + 1) {
+                        label.className = 'text-gray-900 dark:text-white';
+                    } else {
+                        label.className = 'text-gray-400 dark:text-gray-100/50';
+                    }
+                } else {
+                    // 봄/여름: 바로 위 하나(더 높은 온도) + 현재 온도만 검정
+                    if (labelIndex === currentIndex - 1 || labelIndex === currentIndex) {
+                        label.className = 'text-gray-900 dark:text-white';
+                    } else {
+                        label.className = 'text-gray-400 dark:text-gray-100/50';
+                    }
+                }
+            });
+        }
+
+        // 스크롤 위치 조정
+        function scrollToCurrentTemp(temp) {
+            const currentIndex = getTempRangeIndex(temp);
+            const rows = document.querySelectorAll('.clothing-row');
+            const container = document.getElementById('clothingContainer');
+            let targetRow = null;
+            
+            // 현재 온도에 해당하는 항목 찾기
+            rows.forEach((row) => {
+                const rowIndex = parseInt(row.getAttribute('data-temp-range'));
+                if (rowIndex === currentIndex) {
+                    targetRow = row;
+                }
+            });
+            
+            // 현재 온도에 해당하는 항목으로 스크롤 (상단에 딱 맞게)
+            if (targetRow && container) {
+                setTimeout(() => {
+                    // 해당 항목이 컨테이너 상단에 정확히 위치하도록 스크롤
+                    const targetOffsetTop = targetRow.offsetTop;
+                    container.scrollTop = targetOffsetTop;
+                }, 100);
+            }
+        }
+
+        // OpenWeatherMap API 키 (무료: https://openweathermap.org/api 에서 발급)
+        // 무료 티어: 분당 60회 호출, 일일 1,000,000회 호출
+        const WEATHER_API_KEY = '여기에 API 키 입력'; // 여기에 API 키 입력
+        
+        // 날씨 상태 한글 매핑
+        const weatherDescriptionMap = {
+            'clear sky': '맑음',
+            'few clouds': '구름조금',
+            'scattered clouds': '구름많음',
+            'broken clouds': '흐림',
+            'overcast clouds': '흐림',
+            'shower rain': '소나기',
+            'rain': '비',
+            'light rain': '가벼운 비',
+            'moderate rain': '비',
+            'heavy rain': '폭우',
+            'thunderstorm': '천둥번개',
+            'snow': '눈',
+            'light snow': '가벼운 눈',
+            'mist': '안개',
+            'fog': '안개',
+            'haze': '연무'
+        };
+        
+        // 날씨 상태에 따른 Font Awesome 아이콘 매핑 (main 필드 기반)
+        const weatherIconMapByMain = {
+            'clear': 'fa-sun',
+            'clouds': 'fa-cloud',
+            'rain': 'fa-cloud-rain',
+            'drizzle': 'fa-cloud-rain',
+            'thunderstorm': 'fa-bolt',
+            'snow': 'fa-snowflake',
+            'mist': 'fa-smog',
+            'fog': 'fa-smog',
+            'haze': 'fa-smog',
+            'dust': 'fa-smog',
+            'sand': 'fa-smog',
+            'ash': 'fa-smog',
+            'squall': 'fa-wind',
+            'tornado': 'fa-tornado'
+        };
+        
+        // description 기반 매핑 (더 세밀한 구분용)
+        const weatherIconMapByDescription = {
+            'clear sky': 'fa-sun',
+            'few clouds': 'fa-cloud-sun',
+            'scattered clouds': 'fa-cloud',
+            'broken clouds': 'fa-cloud',
+            'overcast clouds': 'fa-cloud',
+            'shower rain': 'fa-cloud-showers-heavy',
+            'light rain': 'fa-cloud-rain',
+            'moderate rain': 'fa-cloud-rain',
+            'heavy rain': 'fa-cloud-showers-heavy',
+            'light snow': 'fa-snowflake',
+            'moderate snow': 'fa-snowflake',
+            'heavy snow': 'fa-snowflake'
+        };
+        
+        // 날씨 상태에 따른 아이콘 색상 매핑 (Tailwind CSS 클래스)
+        const weatherColorMap = {
+            'clear': 'text-orange-500 dark:text-orange-400',           // 맑음: 주황색
+            'clouds': 'text-gray-500 dark:text-gray-400',              // 구름: 회색
+            'rain': 'text-blue-500 dark:text-blue-400',                 // 비: 파란색
+            'drizzle': 'text-blue-400 dark:text-blue-300',              // 이슬비: 밝은 파란색
+            'thunderstorm': 'text-yellow-500 dark:text-yellow-400',    // 천둥번개: 노란색
+            'snow': 'text-sky-300 dark:text-sky-200',                   // 눈: 하늘색
+            'mist': 'text-gray-400 dark:text-gray-300',                 // 안개: 회색
+            'fog': 'text-gray-400 dark:text-gray-300',                  // 안개: 회색
+            'haze': 'text-purple-400 dark:text-purple-300',             // 연무: 보라색
+            'dust': 'text-amber-600 dark:text-amber-500',               // 먼지: 갈색
+            'sand': 'text-amber-600 dark:text-amber-500',               // 모래: 갈색
+            'ash': 'text-gray-500 dark:text-gray-400',                  // 재: 회색
+            'squall': 'text-gray-600 dark:text-gray-500',                // 돌풍: 어두운 회색
+            'tornado': 'text-amber-800 dark:text-amber-700'              // 토네이도: 어두운 갈색
+        };
+        
+        // 날씨 아이콘 업데이트 함수
+        function updateWeatherIcon(mainDescription, detailedDescription) {
+            const iconElement = document.getElementById('weatherIcon');
+            if (!iconElement) return;
+            
+            // 기존 Font Awesome 아이콘 클래스 제거 (fa-sun, fa-cloud 등)
+            const allIconClasses = Object.values(weatherIconMapByMain).concat(Object.values(weatherIconMapByDescription));
+            allIconClasses.forEach(cls => iconElement.classList.remove(cls));
+            
+            // 먼저 detailed description으로 시도, 없으면 main으로
+            let iconClass = weatherIconMapByDescription[detailedDescription];
+            let mainDesc = mainDescription ? mainDescription.toLowerCase() : null;
+            
+            if (!iconClass && mainDesc) {
+                iconClass = weatherIconMapByMain[mainDesc];
+            }
+            
+            // 기본값
+            if (!iconClass) {
+                iconClass = 'fa-sun';
+                mainDesc = 'clear';
+            }
+            
+            // Font Awesome 아이콘 클래스 추가
+            iconElement.classList.add('fas', iconClass);
+            
+            // 색상 업데이트 (Tailwind CSS 클래스 사용)
+            const colorClasses = weatherColorMap[mainDesc] || 'text-gray-600 dark:text-gray-400';
+            // 기존 인라인 스타일 제거
+            iconElement.style.color = '';
+            // 기존 색상 관련 클래스 제거 (모든 weatherColorMap 값에서 클래스 추출)
+            Object.values(weatherColorMap).forEach(classes => {
+                classes.split(' ').forEach(cls => iconElement.classList.remove(cls));
+            });
+            // 새로운 색상 클래스 추가
+            colorClasses.split(' ').forEach(cls => iconElement.classList.add(cls));
+        }
+        
+        // 날씨 정보 가져오기 (OpenWeatherMap)
+        async function fetchWeatherData(city = 'Daegu') {
+            // API 키가 설정되지 않은 경우
+            if (WEATHER_API_KEY === 'YOUR_API_KEY_HERE' || !WEATHER_API_KEY) {
+                console.warn('OpenWeatherMap API 키가 설정되지 않았습니다. 기본값을 사용합니다.');
+                return null;
+            }
+            
+            try {
+                // OpenWeatherMap Current Weather API
+                const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${WEATHER_API_KEY}&units=metric&lang=kr`;
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('날씨 API 오류:', errorData);
+                    throw new Error('날씨 정보를 가져올 수 없습니다.');
+                }
+                
+                const data = await response.json();
+                
+                // 온도와 날씨 상태 추출
+                const temp = data.main.temp;
+                const description = data.weather[0].description;
+                const mainDescription = data.weather[0].main.toLowerCase();
+                
+                // 한글 날씨 상태 변환
+                let koreanDescription = weatherDescriptionMap[description] || description;
+                if (!weatherDescriptionMap[description]) {
+                    // main 필드로 매핑 시도
+                    const mainMap = {
+                        'clear': '맑음',
+                        'clouds': '구름많음',
+                        'rain': '비',
+                        'drizzle': '이슬비',
+                        'thunderstorm': '천둥번개',
+                        'snow': '눈',
+                        'mist': '안개',
+                        'fog': '안개',
+                        'haze': '연무'
+                    };
+                    koreanDescription = mainMap[mainDescription] || description;
+                }
+                
+                return {
+                    temp: temp,
+                    description: koreanDescription,
+                    originalDescription: description, // 아이콘 매핑을 위해 원본 description도 반환
+                    mainDescription: mainDescription, // main 필드 (Clear, Clouds, Rain 등)
+                    city: data.name === 'Daegu' ? '대구' : data.name
+                };
+            } catch (error) {
+                console.error('날씨 API 오류:', error);
+                return null;
+            }
+        }
+        
+        // 날씨 정보 업데이트
+        function updateWeatherDisplay(weatherData) {
+            if (!weatherData) return;
+            
+            const tempElement = document.getElementById('temperature');
+            const locationElement = document.getElementById('location');
+            const weatherStatusElement = document.getElementById('weatherStatus');
+            
+            if (tempElement) {
+                tempElement.textContent = `${weatherData.temp.toFixed(1)}°`;
+            }
+            
+            if (locationElement) {
+                locationElement.textContent = weatherData.city;
+            }
+            
+            if (weatherStatusElement) {
+                weatherStatusElement.textContent = weatherData.description;
+            }
+            
+            // 날씨 아이콘 업데이트
+            if (weatherData.mainDescription || weatherData.originalDescription) {
+                updateWeatherIcon(weatherData.mainDescription, weatherData.originalDescription);
+            }
+        }
+
+        // 초기화
+        async function init() {
+            // 현재 날짜에서 월 가져오기
+            const now = new Date();
+            const month = now.getMonth() + 1; // 1~12
+            
+            // 날씨 정보 가져오기
+            const weatherData = await fetchWeatherData('Daegu');
+            
+            let currentTemp = 13.3; // 기본값
+            
+            if (weatherData) {
+                console.log('날씨 정보 업데이트:', weatherData);
+                updateWeatherDisplay(weatherData);
+                currentTemp = weatherData.temp;
+                console.log('현재 온도:', currentTemp);
+            } else {
+                // API 실패 시 기본값 사용
+                console.warn('날씨 API 실패, 기본값 사용');
+                const tempElement = document.getElementById('temperature');
+                if (tempElement) {
+                    const tempText = tempElement.textContent.replace('°', '');
+                    currentTemp = parseFloat(tempText) || 13.3;
+                }
+            }
+            
+            // 온도 라벨 색상 업데이트
+            updateTempLabelColors(currentTemp, month);
+            
+            // 스크롤 위치만 조정 (모든 항목은 보이게 유지)
+            scrollToCurrentTemp(currentTemp);
+        }
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
